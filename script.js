@@ -59,12 +59,14 @@ class Pokedex{
                 <ul style="text-align: left; margin: 1rem 0;">
                     <li>Offset: ${this.currentOffset}</li>
                     <li>Limit: ${this.limit}</li>
-                    <li>Loaded Pokemons: ${this.allPokemons.length}</li>
+                    <li>Loaded Pokemons: ${this.allPokemon.length}</li>
                     <li>Filtered Pokemons: ${this.filteredPokemon.length}</li>
                 </ul>
                 <p><strong></strong></p>    
         </div>`;
     }
-
-
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    const pokedex = new Pokedex(); //Create an instance of the Pokedex class when the DOM is loaded
+});
