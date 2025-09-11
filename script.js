@@ -26,9 +26,11 @@ class Pokedex{
         }*/
 
         await this.loadInitialPokemons(); //Load the initial list of pokemon
+
+        this.displayPokemonCards(); //Display the pokemon cards on the screen
         
         //Message to show that the app is working
-        this.showTestMessage();
+        //this.showTestMessage();
     }
 
     //Method to fetch pokemon data from the API
@@ -95,6 +97,27 @@ class Pokedex{
 
         console.log(` Load complete! Total pokemon loaded: ",  ${this.allPokemon.length}`);
     }
+
+    displayPokemonCards(){
+        const grid = document.getElementById("pokemonGrid");//Grid of the pokemons list
+        grid.innerHTML = ""; //Clear the grid before displaying
+        
+        this.filteredPokemon.forEach(pokemon => {
+
+            const cardHTML = `
+                <div class="pokemon-card" data-id="${pokemon.id}">
+                    <div class = "pokemon-id">#${pokemon.id}</div>
+                    <img src="${pokemon.sprites.front_default}" alt="${pokemon.name}" class="pokemon-image">
+                    <h3 class = "pokemon-name">${pokemon.name}</h3>
+                </div>
+            `;
+            grid.innerHTML += cardHTML;//Append each card to the grid
+
+
+        });
+        console.log(`Displayed${this.filteredPokemon.length}Pokemon cards`);
+    }
+
 
 
     /*Test window to show that the app is working,
