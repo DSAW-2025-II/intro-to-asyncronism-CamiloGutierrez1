@@ -11,7 +11,7 @@ body {
     color: #333;
 }
 header {
-    background: rgb(213 106 106);
+    background: rgb(221 63 63);
     padding: 0.8rem 1.2rem;
     position: sticky ;/*Fijo si se hace scroll*/
     top:0;
@@ -26,7 +26,7 @@ header {
     margin-bottom: 0.8rem;
 }
 
-/* 🔴 Pokeball con imagen */
+/* pokebola imagen  */
 .pokeball-logo {
     width: 55px;
     height: 55px;
