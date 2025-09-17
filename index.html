@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokedex</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-top">
+            <img src="pokeball.png" alt="Pokeball Logo" class="pokeball-logo">
+            <h1>Pokedex</h1>
+        </div>
+        
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search your Pokemon">
+            <button id="searchBtn">
+                <img src="search-icon.png" alt="Search" class="search-icon">
+            </button>
+        </div>
+        
+        <div class="filters">
+            <div class="filter-group">
+                <select id="sortOrder">
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                </select>
+            </div>
+            
+            <div class="range-inputs">
+                <span>From</span>
+                <input type="number" id="rangeFrom" placeholder="" min="1" max="1302">
+                <span>To</span>
+                <input type="number" id="rangeTo" placeholder="" min="1" max="1302">
+                <button id="applyRangeBtn">Apply Range</button>
+            </div>
+            
+            <div class="filter-group">
+                <select id="typeFilter">
+                    <option value="">All Types</option>
+                    <option value="normal">Normal</option>
+                    <option value="fire">Fire</option>
+                    <option value="water">Water</option>
+                    <option value="electric">Electric</option>
+                    <option value="grass">Grass</option>
+                    <option value="ice">Ice</option>
+                    <option value="fighting">Fighting</option>
+                    <option value="poison">Poison</option>
+                    <option value="ground">Ground</option>
+                    <option value="flying">Flying</option>
+                    <option value="psychic">Psychic</option>
+                    <option value="bug">Bug</option>
+                    <option value="rock">Rock</option>
+                    <option value="ghost">Ghost</option>
+                    <option value="dragon">Dragon</option>
+                    <option value="dark">Dark</option>
+                    <option value="steel">Steel</option>
+                    <option value="fairy">Fairy</option>
+                </select>
+            </div>
+
+            <div class = "filter-group">
+                <button id="clearFiltersBtn">Clear All Filters</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="pokemon-grid" id="pokemonGrid">
+            <div class="loading">Loading Pokémon...</div>
+        </div>
+
+        <div class="pokemon-detail" id="pokemonDetail">
+            <div class="detail-placeholder">
+                <div class="detail-pokeball"></div>
+                <h3>Select a Pokemon</h3>
+                <p>Click on any Pokemon card to see its detailed information including stats, abilities, and more.</p>
+            </div>
+        </div>
+    </div>
+    <script src="env.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
+
