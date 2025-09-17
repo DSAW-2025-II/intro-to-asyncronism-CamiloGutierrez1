@@ -112,73 +112,75 @@
             console.log(` done, total loaded ",  ${this.allPokemon.length}`);
         }
 
-        async loadMorePokemons(){// Infitinite scroll method
-            if (this.isLoading || this.currentOffset >= this.maxPokemon){
-                return; //prevent multiple loads
+        async loadMorePokemons(){//method to infitinite scroll 
+            if (this.isLoading ||this.currentOffset >= this.maxPokemon){
+                return; // prevenir cargas multiples
             }
-            console.log("Loading more pokemons...");
+            console.log("Loading more");
             this.isLoading = true;
+            this.showLoadingIndicator();
 
-            this.showLoadingIndicator();//Show a loading indicator
+            const nextBatch =this.currentOffset + 1 ;
+            const endBatch= Math.min( nextBatch +this.limit -1 ,this.maxPokemon);
 
-            const nextBatch = this.currentOffset + 1;
-            const endBatch = Math.min(nextBatch + this.limit - 1, this.maxPokemon);
-
-            for (let i = nextBatch; i <= endBatch; i++){
-                console.log(`Loading pokemon ID: ${i}`);
+            for (let i=nextBatch; i <=endBatch;i++){
+                console.log("Loading  ",i); 
                 const pokemonData = await this.fetchPokemon(i);
                 if(pokemonData){
                     this.allPokemon.push(pokemonData);
-                    console.log(`Loaded: ${pokemonData.name} (#${pokemonData.id})`);
+                    console.log(`ok: ${pokemonData.name} (#${pokemonData.id})`);
                 }
             }
-            this.currentOffset = endBatch;
-            this.filteredPokemon = [...this.allPokemon];
-            this.isLoading = false;
+            
+            
+            this.currentOffset =endBatch;
+            
+            this.filteredPokemon= [...this.allPokemon];
+            
+            this.isLoading =false;
 
-            this.removeLoadingIndicator();//Remove the loading indicator
-            this.displayPokemonCards();//Update the display with new pokemons
+            this.removeLoadingIndicator();
+            
+            this.displayPokemonCards();//  update with new pokemons
 
-            console.log(`Load complete! Total pokemon loaded: ${this.allPokemon.length}`);
+            console.log("done , total = ",this.allPokemon.length);
         }
 
-        setupScroll(){// Setup the scroll event for infinite scrolling
-            let scrollWorking = true;
+        setupScroll(){//scroll event for infinite scrolling
+            let scrollWorking= true;
             window.addEventListener("scroll", () => {
-                const {scrollTop, scrollHeight, clientHeight} = document.documentElement;
+                const {scrollTop, scrollHeight, clientHeight}= document.documentElement;
 
-                if(scrollTop + clientHeight >= scrollHeight - 100){
+                if(scrollTop +clientHeight >=scrollHeight -100){
                     this.loadMorePokemons();
                 }
             });
-            console.log("Scroll configured for infinite scroll");
+            console.log("Sscroll configured ");
         }
 
         setupSearchEvents(){
-            const searchInput = document.getElementById("searchInput");
-            const searchBtn = document.getElementById("searchBtn");
-
+            const searchInput =document.getElementById("searchInput");
+            const searchBtn= document.getElementById ("searchBtn");
+ 
             searchInput.addEventListener("input", (event) => {
                 this.currentSearch = event.target.value.trim().toLowerCase();
-                console.log("Search term:", this.currentSearch);
+                console.log("Seach:", this.currentSearch);
                 this.applyCurrentFilters();
             });
-            searchBtn.addEventListener("click", () => {// search button clicked
-                this.currentSearch = searchInput.value.trim().toLowerCase();
-                console.log("Search button clicked, term:", this.currentSearch);
+            searchBtn.addEventListener("click", () => {// button clicked
+                this.currentSearch= searchInput.value.trim().toLowerCase();
+                console.log("button , term= ", this.currentSearch);
                 this.applyCurrentFilters();
             });
-
-            searchInput.addEventListener("keypress", (event) => {
+            searchInput.addEventListener("keypress",(event) =>{
                 if(event.key === "Enter"){
                     this.currentSearch = searchInput.value.trim().toLowerCase();
-                    console.log("Search term:", this.currentSearch);
+                    console.log("enter pressed, term:", this.currentSearch);
                     this.applyCurrentFilters(); 
                 }
             });
-            console.log("Search events configured");
+            console.log("search okand configured");
         }
-
         setupFilterEvents(){
             const typeFilter = document.getElementById("typeFilter");
             const rangeFrom = document.getElementById("rangeFrom");
@@ -189,95 +191,99 @@
 
             typeFilter.addEventListener("change", (event) => {
                 this.currentTypeFilter = event.target.value;
-                console.log("Type filter:", this.currentTypeFilter);
+                console.log("type filter ", this.currentTypeFilter);
                 this.applyCurrentFilters();
             });
             applyRangeBtn.addEventListener("click", () => {
-                const from = parseInt(rangeFrom.value) || 1;
-                const to = parseInt(rangeTo.value) || this.maxPokemon;
+                const fromVal = parseInt(rangeFrom.value)|| 1 ;
+                const toVal = parseInt(rangeTo.value)   || this.maxPokemon;
 
-                this.currentRangeFrom = Math.max(1,from);
-                this.currentRangeTo = Math.min(this.maxPokemon, to);
+                this.currentRangeFrom= Math.max(1,fromVal);
+                this.currentRangeTo = Math.min ( this.maxPokemon, toVal );
 
                 if(this.currentRangeFrom > this.currentRangeTo){
                     [this.currentRangeFrom, this.currentRangeTo] = [this.currentRangeTo, this.currentRangeFrom];
                 }
-                console.log(`Range filter: ${this.currentRangeFrom} to ${this.currentRangeTo}`);
+                console.log(`range: ${this.currentRangeFrom} "- "${this.currentRangeTo}`);
                 this.applyCurrentFilters();
         
             });
-            clearFiltersBtn.addEventListener("click", () => {
-                this.clearAllFilters();
+             clearFiltersBtn.addEventListener("click", () => {
+                this.clearAllFilters() ; //reset filtres
             });
+            
             sortOrder.addEventListener("change", (event) => {
                 this.sortPokemon(event.target.value);
-            });
+            } );
 
         }
-        applyCurrentFilters(){//Apply all filters 
+        applyCurrentFilters(){//apply all filters search, type, range
             
             let filtered = [...this.allPokemon];
-            //Apply type filter
             if(this.currentSearch !== ""){
                 filtered = filtered.filter(pokemon => {
                     const nameMatch = pokemon.name.toLowerCase().includes(this.currentSearch);
                     const idMatch = pokemon.id.toString().includes(this.currentSearch);
 
                     return nameMatch || idMatch;
-                });
+                }) ;
             }
-            if(this.currentTypeFilter !== ""){
-                filtered = filtered.filter(pokemon => {
-                    return pokemon.types.some(typeInfo => typeInfo.type.name === this.currentTypeFilter);
+            if(this.currentTypeFilter!==    ""){
+                filtered =filtered.filter(pokemon => {
+                    return pokemon.types.some(typeInfo => 
+                    typeInfo.type.name === this.currentTypeFilter);
                 }); 
             }
 
             filtered = filtered.filter(pokemon => {
-                return pokemon.id >= this.currentRangeFrom && pokemon.id <= this.currentRangeTo;
+                return pokemon.id >=this.currentRangeFrom && pokemon.id<= this.currentRangeTo ;
             });
             this.filteredPokemon = filtered;
-            console.log(`Filtered pokemon: ${this.filteredPokemon.length} pokemon from ${this.allPokemon.length} total`);
+            console.log("filtered" ,this.filteredPokemon.length,"/",this.allPokemon.length);
             this.displayPokemonCards();
             this.showSearchResults();
         }
 
-        sortPokemon(order){//Method to sort the pokemon list
+        sortPokemon(order){//Sort the pokemons by id
             if(order === "desc"){
-                this.filteredPokemon.sort((a,b) => b.id - a.id);
+                this.filteredPokemon.sort((a,b) => b.id - a.id);// mayor a menor id
 
             }else{
-                this.filteredPokemon.sort((a,b) => a.id - b.id);
+                this.filteredPokemon.sort((a,b) => a.id - b.id);// menor a mayor id
             }
             this.displayPokemonCards();    
         }
 
-        clearAllFilters(){//Method to clear all filters
+        clearAllFilters(){// Clear filters and reset values
             const searchInput = document.getElementById("searchInput");
             const typeFilter = document.getElementById("typeFilter");
             const rangeFrom = document.getElementById("rangeFrom");
             const rangeTo = document.getElementById("rangeTo");
             const sortOrder = document.getElementById("sortOrder");
 
+            // reset values
             searchInput.value = "";
             typeFilter.value = "";
             rangeFrom.value = "";
             rangeTo.value = "";
             sortOrder.value = "asc";
 
+            // Reset intern state
             this.currentSearch = "";
             this.currentTypeFilter = "";
             this.currentRangeFrom = 1;
             this.currentRangeTo = this.maxPokemon;
 
             this.applyCurrentFilters();
-            console.log("All filters cleared");
+            console.log("filters cleared");
         }
 
 
-        showSearchResults(){//Method to show the search results
+        showSearchResults(){//Method to show the search results or  without results
             const grid = document.getElementById("pokemonGrid");
 
-            if (this.filteredPokemon.length === 0 && (this.currentSearch !== "" || this.currentTypeFilter !== "")){
+            if (this.filteredPokemon.length === 0 && (this.currentSearch !== "" 
+                || this.currentTypeFilter !== "")){
 
                 grid.innerHTML = `
                     <div class = "no-results">
@@ -286,51 +292,57 @@
                        <p>Try adjusting your search criteria or clear the filters</p>
                     </div>
                 `;
-            }else if (this.filteredPokemon.length > 0 && (this.currentSearch !== "" || this.currentTypeFilter !== "")){
-                console.log(`Found: "${this.filteredPokemon.length}" pokemon matching current filters`);
+                console.log("No pokemon found matching current filters");
+            }else if (this.filteredPokemon.length > 0 && 
+                (this.currentSearch !== ""|| this.currentTypeFilter !== "")){
+                console.log(`results:  ${this.filteredPokemon.length} pokemon matching current filters`);
             }
+        
+        
         }
 
-        clearSearch(){//Method to clear the search
+        clearSearch(){// clear the search
             const searchInput = document.getElementById("searchInput");
             searchInput.value = "";
-            this.currentSearch = ENV.CURRENT_SEARCH;
+            this.currentSearch = "";
             this.applyCurrentFilters();        
         }
-        showLoadingIndicator(){//Method to show a loading indicator
-            this.removeLoadingIndicator(); //Remove indicator if it already exists  
+        showLoadingIndicator(){//show the loading indicator
+            this.removeLoadingIndicator(); //evitar duplicados           
             
             const container = document.querySelector(".container");
-            const loadingDiv = document.createElement("div");//Grid of the pokemons list
-            loadingDiv.id = "loadingMore";
+            const loadingDiv = document.createElement("div");//  grid of the pokemons list
+            loadingDiv.id= "loadingMore";
             loadingDiv.className = "loading-more";
-            loadingDiv.innerHTML = `
+            loadingDiv.innerHTML= `
                 <div class = "loading">
-                    <p>Loading more pokemons...</p>
+                    <p>Loading more pokemons </p>
                 </div>
             `;
-            container.appendChild(loadingDiv);//Append the loading indicator to the container    
+            container.appendChild(loadingDiv);// append the loading indicator to the container    
         }
-        removeLoadingIndicator(){//Method to remove the loading indicator
+        removeLoadingIndicator(){
             const loadingIndicator = document.getElementById("loadingMore");
             if(loadingIndicator){
                 loadingIndicator.remove();
             }
+        
+        
         }
-        displayPokemonCards(){ // Method to display the pokemon cards on the screen
+        displayPokemonCards(){  //Method to display the pokemon cards on the screen
             
             let contador = 0;
-            const grid = document.getElementById("pokemonGrid");//Grid of the pokemons list
-            grid.innerHTML = ""; //Clear the grid before displaying
+            const grid=document.getElementById("pokemonGrid");//Grid of the pokemons list
+            grid.innerHTML=  ""; //Clear the grid before displaying
             
             this.filteredPokemon.forEach(pokemon => {
 
+                //Tags by type
                 let typesHTML = "";
                 pokemon.types.forEach(typeInfo => {
                     const typeName = typeInfo.type.name;
                     typesHTML += `<span class="type-badge type-${typeName}">${typeName}</span>`;
                 });
-
                 const cardHTML = `
                     <div class="pokemon-card" data-id="${pokemon.id}">
                         <div class = "pokemon-header">
@@ -353,10 +365,10 @@
 
 
             });
-            console.log(`Displayed${this.filteredPokemon.length}Pokemon cards`);
+            console.log(`display: ${this.filteredPokemon.length}Pokemones`);
         }
 
-        setupClickEvents(){//Method to configure click events on the pokemon cards
+        setupClickEvents(){  //method to configure click events on the pokemon cards
             console.log ("Setting up click events for pokemon cards..");
 
             const grid = document.getElementById("pokemonGrid");
@@ -367,28 +379,28 @@
                 const card = event.target.closest(".pokemon-card");//Check if a pokemon card was clicked
                 if(card){
                     const pokemonId = parseInt(card.dataset.id);
-                    console.log("Clicked on Pokemon ID: ", pokemonId);
+                    console.log("selected card ", pokemonId);
                     this.showPokemonDetail(pokemonId);
                 }
             });
-            console.log("Click events configured" );
+            console.log("Click events configured :)" );
 
         }
         async showPokemonDetail(pokemonId){//Method to show the details of a selected pokemon
-            console.log(`Showing details for Pokemon ID:${pokemonId}` );
 
             //Search the pokemon in the allPokemon array
             const pokemon = this.allPokemon.find(p => p.id === pokemonId);
 
-            if(!pokemon){
+            if(!pokemon ){
                 console.error( " Pokemon not found");
                 return;
             }
+            // obtain extra data from specie endpoint
             const speciesData = await this.fetchPokemonSpecies(pokemonId);
             
-            this.selectedPokemon = pokemon;//Save the selected pokemon
+            this.selectedPokemon= pokemon;//Save the selected pokemon
 
-            const detailContainer = document.getElementById("pokemonDetail");//Obtain the detail container
+            const detailContainer = document.getElementById( "pokemonDetail");//Obtain the detail container
 
             let typesHTML = "";
             // Array and Loop to create types 1 by 1
@@ -404,6 +416,7 @@
             }
 
             let statsHTML = "";
+            //stats 1 by 1
             pokemon.stats.forEach(statInfo => {
                 statsHTML += `
                     <div class="stat-item">
@@ -413,7 +426,7 @@
                 `;
             });
 
-            let description = "No description available.";
+            let description = "No description available.";// description of the pokemon
             if(speciesData && speciesData.flavor_text_entries){
                 const englishEntry = speciesData.flavor_text_entries.find(entry => entry.language.name === "en");
                 if(englishEntry){
@@ -421,7 +434,7 @@
                 }
             }
 
-            let category = "Unknown";
+            let category = "Unknown"; // category of the pokemon
             if(speciesData && speciesData.genera){
                 const englishGenus = speciesData.genera.find(genus => genus.language.name === "en");
                 if(englishGenus){
@@ -429,6 +442,8 @@
                 }    
             }
 
+            // Detail HTML structure
+            // Insert variables in a string template.
             const detailHTML = `
             <div class="pokemon-detail-content">
                 <div class="detail-image">
@@ -449,11 +464,11 @@
                     <div class="stats-grid">
                         <div class="stat-item">
                             <span class="stat-name">Height</span>
-                            <span class="stat-value">${pokemon.height / 10} m</span>
+                            <span class="stat-value">${pokemon.height/ 10} m</span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-name">Weight</span>
-                            <span class="stat-value">${pokemon.weight / 10} kg</span>
+                            <span class="stat-value">${pokemon.weight/ 10 } kg</span>
                         </div>
                     </div>
                 </div>
@@ -481,7 +496,7 @@
             </div>
         `;
 
-        detailContainer.innerHTML = detailHTML;
+        detailContainer.innerHTML = detailHTML;// Insert the detail HTML into the container
         console.log(`Detail shown for: ${pokemon.name}`);
             
             
